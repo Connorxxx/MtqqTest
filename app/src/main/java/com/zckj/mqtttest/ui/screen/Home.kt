@@ -14,7 +14,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +29,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.zckj.mqtttest.event.Mqtt
+import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.utils.navigateSingleTopTo
 import com.zckj.mqtttest.viewmodels.MainViewModel
 
@@ -43,10 +49,10 @@ fun Home(vm: MainViewModel) {
             Modifier.padding(it)
         ) {
             composable(Screen.Received.route) {
-                Received()
+                Received(vm)
             }
             composable(Screen.Send.route) {
-                Send()
+                Send(vm)
             }
         }
     }

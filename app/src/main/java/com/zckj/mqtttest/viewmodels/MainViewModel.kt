@@ -1,13 +1,14 @@
 package com.zckj.mqtttest.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.zckj.mqtttest.event.Mqtt
 import com.zckj.mqtttest.models.repo.MqttRepository
 import com.zckj.mqtttest.utils.logCat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import org.eclipse.paho.mqttv5.client.IMqttToken
 import org.eclipse.paho.mqttv5.client.MqttCallback
 import org.eclipse.paho.mqttv5.client.MqttDisconnectResponse
@@ -27,14 +28,23 @@ class MainViewModel @Inject constructor(
     private val _mqttEvent = MutableSharedFlow<Mqtt>()
     val mqttEvent = _mqttEvent.asSharedFlow()
 
-    private val mqtt = mqttRepo.connectMqtt(serverUri, clientId)
+    val client = mqttRepo.connectMqtt(serverUri, clientId)
 
-    fun subscribe(topic: String, qos: Int) {
-        mqtt?.subscribe(topic, qos)
+    fun senMqtt(mqtt: Mqtt) {
+        viewModelScope.launch {
+            _mqttEvent.emit(mqtt)
+        }
+    }
+
+    fun publishMessage(topic: String, msg: String) {
+        MqttMessage(msg.toByteArray()).apply {
+            qos = 1
+            client?.publish(topic, this)
+        }
     }
 
     init {
-        mqtt?.setCallback(object : MqttCallback {
+        client?.setCallback(object : MqttCallback {
             override fun disconnected(p0: MqttDisconnectResponse?) {
 
             }
@@ -45,6 +55,7 @@ class MainViewModel @Inject constructor(
 
             override fun messageArrived(topic: String?, msg: MqttMessage?) {
                 "$topic -> $msg".logCat()
+                senMqtt(Mqtt.Received(topic ?: "", msg ?: MqttMessage()))
             }
 
             override fun deliveryComplete(p0: IMqttToken?) {
