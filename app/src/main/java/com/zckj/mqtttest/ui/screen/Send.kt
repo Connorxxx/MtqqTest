@@ -30,16 +30,8 @@ import com.zckj.mqtttest.viewmodels.MainViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Send(vm: MainViewModel) {
-    var receiveState by rememberSaveable { mutableStateOf("") }
     var topic by rememberSaveable { mutableStateOf("") }
     var text by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        vm.mqttEvent.collect {
-            if (it is Mqtt.Received) {
-                receiveState = it.message.toString()
-            }
-        }
-    }
     Column(Modifier.fillMaxWidth()) {
         TextField(
             value = topic,
@@ -66,7 +58,7 @@ fun Send(vm: MainViewModel) {
         }
 
         Text(
-            text = receiveState,
+            text = vm.receiveState,
             style = TextStyle(
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,

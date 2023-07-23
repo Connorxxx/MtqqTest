@@ -1,5 +1,8 @@
 package com.zckj.mqtttest.viewmodels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zckj.mqtttest.event.Mqtt
@@ -32,6 +35,8 @@ class MainViewModel @Inject constructor(
     private val _mqttEvent = MutableSharedFlow<Mqtt>()
     val mqttEvent = _mqttEvent.asSharedFlow()
 
+    var receiveState by mutableStateOf("")
+
     var client: MqttClient? = null
         private set
 
@@ -63,6 +68,7 @@ class MainViewModel @Inject constructor(
 
                 override fun messageArrived(topic: String?, msg: MqttMessage?) {
                     "$topic -> $msg".logCat()
+                    receiveState = msg.toString()
                     senMqtt(Mqtt.Received(topic ?: "", msg ?: MqttMessage()))
                 }
 
