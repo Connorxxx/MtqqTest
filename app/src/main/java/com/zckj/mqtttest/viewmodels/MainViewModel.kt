@@ -32,19 +32,11 @@ class MainViewModel @Inject constructor(
 //    private val serverUri = "tcp://192.168.0.112:1883"
     private val clientId = "android_001"
 
-    private val _mqttEvent = MutableSharedFlow<Mqtt>()
-    val mqttEvent = _mqttEvent.asSharedFlow()
-
     var receiveState by mutableStateOf("")
+        private set
 
     var client: MqttClient? = null
         private set
-
-    fun senMqtt(mqtt: Mqtt) {
-        viewModelScope.launch {
-            _mqttEvent.emit(mqtt)
-        }
-    }
 
     fun connect(serverUri: String) {
         viewModelScope.launch() {
@@ -69,7 +61,6 @@ class MainViewModel @Inject constructor(
                 override fun messageArrived(topic: String?, msg: MqttMessage?) {
                     "$topic -> $msg".logCat()
                     receiveState = msg.toString()
-                    senMqtt(Mqtt.Received(topic ?: "", msg ?: MqttMessage()))
                 }
 
                 override fun deliveryComplete(p0: IMqttToken?) {

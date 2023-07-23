@@ -42,10 +42,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavHome() {
     val navController = rememberNavController()
-    val viewModel = hiltViewModel<MainViewModel>()
+   // val viewModel = hiltViewModel<MainViewModel>()
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
-            Home(viewModel)
+            Home()
         }
     }
 }

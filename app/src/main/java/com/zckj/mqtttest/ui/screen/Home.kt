@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -36,9 +37,10 @@ import com.zckj.mqtttest.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(vm: MainViewModel) {
+fun Home() {
     val navController = rememberNavController()
     val item = listOf(Screen.Received, Screen.Send)
+    val viewModel = hiltViewModel<MainViewModel>()
     Scaffold(
         topBar = { HomeTopBar() },
         bottomBar = { BottomBar(navController = navController, item = item) },
@@ -49,10 +51,10 @@ fun Home(vm: MainViewModel) {
             Modifier.padding(it)
         ) {
             composable(Screen.Received.route) {
-                Received(vm)
+                Received(viewModel)
             }
             composable(Screen.Send.route) {
-                Send(vm)
+                Send(viewModel)
             }
         }
     }
