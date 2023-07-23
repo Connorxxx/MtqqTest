@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.paho.mqttv5.client.IMqttToken
@@ -49,33 +50,14 @@ class MainViewModel @Inject constructor(
             }.onFailure {
                 "Error: ${it.localizedMessage}".showToast()
             }
-            client?.setCallback(object : MqttCallback {
-                override fun disconnected(p0: MqttDisconnectResponse?) {
 
+            mqttRepo.getState(client).collect {
+                when (it) {
+                    is Mqtt.Received -> receiveState = "Topic: ${it.topic}\n\n ${it.message}"
+                    is Mqtt.Lost -> "Mqtt Lost: ${it.cause.reasonString}".logCat()
+                    is Mqtt.Error -> "Mqtt Error: ${it.e.localizedMessage}".logCat()
                 }
-
-                override fun mqttErrorOccurred(p0: MqttException?) {
-                    p0?.logCat()
-                }
-
-                override fun messageArrived(topic: String?, msg: MqttMessage?) {
-                    "$topic -> $msg".logCat()
-                    receiveState = msg.toString()
-                }
-
-                override fun deliveryComplete(p0: IMqttToken?) {
-
-                }
-
-                override fun connectComplete(reconnect: Boolean, serverURI: String?) {
-                    "connectComplete: $reconnect -> $serverURI".logCat()
-                }
-
-                override fun authPacketArrived(p0: Int, p1: MqttProperties?) {
-
-                }
-
-            })
+            }
         }
     }
 

@@ -51,7 +51,7 @@ fun Send(vm: MainViewModel) {
                 .padding(top = 24.dp, start = 8.dp, end = 8.dp)
         )
         Button(
-            onClick = { vm.publishMessage("test", text) },
+            onClick = { vm.publishMessage(topic, text) },
             Modifier
                 .padding(end = 24.dp, top = 24.dp).align(Alignment.End)
         ) {
