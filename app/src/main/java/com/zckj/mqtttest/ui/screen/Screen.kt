@@ -4,7 +4,9 @@ import androidx.annotation.StringRes
 import com.zckj.mqtttest.R
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Home : Screen("home", R.string.home)
-    object Received : Screen("received",R.string.received)
-    object Send : Screen("send", R.string.send)
+    data object Home : Screen("home", R.string.home)
+    data object Setting : Screen("setting",R.string.setting)
+    data object Message : Screen("message", R.string.message)
+
+    data object Test : Screen("test", R.string.test)
 }

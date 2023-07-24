@@ -9,26 +9,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zckj.mqtttest.utils.Event
+import com.zckj.mqtttest.utils.Route
+import com.zckj.mqtttest.utils.post
 import com.zckj.mqtttest.viewmodels.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Received(vm: MainViewModel) {
+fun Setting(vm: MainViewModel) {
     var topic by rememberSaveable { mutableStateOf("") }
+    var user by rememberSaveable { mutableStateOf("") }
+    var passwd by rememberSaveable { mutableStateOf("") }
     var connect by rememberSaveable { mutableStateOf("tcp://") }
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -44,16 +46,41 @@ fun Received(vm: MainViewModel) {
         Row(
             Modifier
                 .fillMaxWidth()
+                .padding(top = 24.dp)) {
+            TextField(
+                value = user,
+                onValueChange = { user = it },
+                label = { Text("User") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp)
+                    .weight(1f)
+            )
+            TextField(
+                value = passwd,
+                onValueChange = { passwd = it },
+                label = { Text("Password") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp)
+                    .weight(1f)
+            )
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
                 .padding(top = 12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { vm.connect(connect) }
+                onClick = { vm.connect(connect, user, passwd.toByteArray()) }
             ) {
                 Text(text = "Connect", maxLines = 1)
             }
             Button(
-                onClick = { vm.client?.disconnect() }
+                onClick = {
+                    vm.disConnect()
+                }
             ) {
                 Text(text = "Disconnect", maxLines = 1)
             }
@@ -76,15 +103,18 @@ fun Received(vm: MainViewModel) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { vm.client?.subscribe(topic, 1) }
+                onClick = { vm.subscribe(topic) }
             ) {
                 Text(text = "Subscribe", maxLines = 1)
             }
             Button(
-                onClick = { vm.client?.unsubscribe(topic) }
+                onClick = { vm.unsubscribe(topic) }
             ) {
                 Text(text = "Unsubscribe", maxLines = 1)
             }
+        }
+        Button(onClick = { scope.post(Route(Screen.Test.route)) }) {
+            Text(text = "Test")
         }
     }
 }

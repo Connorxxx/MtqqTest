@@ -31,46 +31,58 @@ class MainViewModel @Inject constructor(
     private val mqttRepo: MqttRepository
 ) : ViewModel() {
 
-//    private val serverUri = "tcp://192.168.0.112:1883"
-    private val clientId = "Android_${Build.MODEL}_${Build.DEVICE}"
+    private val clientId = "Android_${Build.MODEL}_${Build.DEVICE}_${(0..250).random()}"
 
     var receiveState by mutableStateOf("")
         private set
 
-    var connectState by mutableStateOf("Connect")
+    var connectState by mutableStateOf("Not connect yet")
         private set
 
-    var client: MqttClient? = null
-        private set
+    private var client: MqttClient? = null
 
-    fun connect(serverUri: String) {
+    fun connect(serverUri: String, user: String = "", pass: ByteArray = "".toByteArray()) {
         viewModelScope.launch {
-            runCatching {
-                withContext(Dispatchers.IO) {
-                    mqttRepo.connectMqtt(serverUri, clientId)
+            mqttRepo.connectMqtt(serverUri, user, pass, clientId)
+                .onSuccess {
+                    client = it
+                    connectState = if (it.isConnected) "Connected" else "Connected failed"
+                    "Mqtt connect: ${it.isConnected} ${it.clientId}".logCat()
+                }.onFailure {
+                    connectState = "Error"
+                    "Error: ${it.localizedMessage}".showToast()
                 }
-            }.onSuccess {
-                client = it
-                connectState = "Connected"
-            }.onFailure {
-                connectState = "Error"
-                "Error: ${it.localizedMessage}".showToast()
-            }
-            "server: ${client?.serverURI} client: ${client?.clientId}".logCat()
             mqttRepo.getState(client).collect {
                 when (it) {
                     is Mqtt.Received -> receiveState = "Topic: ${it.topic}\n\n ${it.message}"
-                    is Mqtt.Lost -> "Mqtt Lost: ${it.cause.reasonString} ${it.cause.returnCode}".logCat()
+                    is Mqtt.Lost -> {
+                        "Mqtt Lost: ${it.cause}".logCat()
+                        if (it.cause.returnCode != 142) connectState = "Lost"
+                    }
                     is Mqtt.Error -> "Mqtt Error: ${it.e.localizedMessage}".logCat()
                 }
             }
         }
     }
 
+    fun disConnect() {
+        runCatching { client?.disconnect() }.onSuccess { connectState = "Disconnect" }
+    }
+
+    fun subscribe(topic: String) {
+        runCatching { client?.subscribe(topic, 1) }
+    }
+
+    fun unsubscribe(topic: String) {
+        runCatching { client?.unsubscribe(topic) }
+    }
+
     fun publishMessage(topic: String, msg: String) {
         MqttMessage(msg.toByteArray()).apply {
             qos = 1
-            client?.publish(topic, this)
+            runCatching { client?.publish(topic, this) }.onFailure {
+                "Error: ${it.localizedMessage}".showToast()
+            }
         }
     }
 }

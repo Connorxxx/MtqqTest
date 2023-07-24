@@ -2,10 +2,12 @@ package com.zckj.mqtttest.models.repo
 
 import com.zckj.mqtttest.event.Mqtt
 import com.zckj.mqtttest.utils.logCat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import org.eclipse.paho.mqttv5.client.IMqttToken
 import org.eclipse.paho.mqttv5.client.MqttCallback
 import org.eclipse.paho.mqttv5.client.MqttClient
@@ -24,19 +26,18 @@ import kotlin.coroutines.suspendCoroutine
 @Singleton
 class MqttRepository @Inject constructor() {
 
-    suspend fun connectMqtt(serverUri: String, clientId: String) = suspendCoroutine {
-        val client = MqttClient(serverUri, clientId, MemoryPersistence())
-        val options = MqttConnectionOptions()
-        client.connect(options)
-        if (client.isConnected) {
-            "Connected to MQTT server".logCat()
-            it.resume(client)
+    suspend fun connectMqtt(serverUri: String, user: String, pass: ByteArray, clientId: String) =
+        withContext(Dispatchers.IO) {
+            val client = MqttClient(serverUri, clientId, MemoryPersistence())
+            val options = MqttConnectionOptions().apply {
+                userName = user
+                password = pass
+                keepAliveInterval = 20
+                connectionTimeout = 15
+                isSendReasonMessages = true
+            }
+            runCatching { client.apply { connect(options) } }
         }
-        else {
-            "Failed to connect to MQTT server".logCat()
-            it.resumeWithException(Exception("Failed to connect to MQTT server"))
-        }
-    }
 
     fun getState(client: MqttClient?) = callbackFlow {
         client?.setCallback(object : MqttCallback {
