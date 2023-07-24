@@ -1,5 +1,6 @@
 package com.zckj.mqtttest
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.zckj.mqtttest.ui.screen.Home
 import com.zckj.mqtttest.ui.screen.Screen
 import com.zckj.mqtttest.ui.theme.MqttTestTheme
+import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,6 +27,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        "Info: ${Build.BOARD} ${Build.MODEL} ${Build.DEVICE}".logCat()
         setContent {
             MqttTestTheme {
                 // A surface container using the 'background' color from the theme

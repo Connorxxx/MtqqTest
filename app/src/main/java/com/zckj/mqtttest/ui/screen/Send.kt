@@ -2,7 +2,9 @@ package com.zckj.mqtttest.ui.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,11 +55,14 @@ fun Send(vm: MainViewModel) {
         Button(
             onClick = { vm.publishMessage(topic, text) },
             Modifier
-                .padding(end = 24.dp, top = 24.dp).align(Alignment.End)
+                .padding(end = 24.dp, top = 24.dp)
+                .align(Alignment.End)
         ) {
             Text(text = "Send")
         }
-
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(24.dp))
         Text(
             text = vm.receiveState,
             style = TextStyle(
@@ -65,7 +70,7 @@ fun Send(vm: MainViewModel) {
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             ),
-            modifier = Modifier.padding(start = 12.dp)
+            modifier = Modifier.padding(start = 24.dp)
         )
     }
 

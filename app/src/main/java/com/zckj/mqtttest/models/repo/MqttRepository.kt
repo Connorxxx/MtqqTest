@@ -17,6 +17,8 @@ import org.eclipse.paho.mqttv5.common.MqttMessage
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 @Singleton
@@ -28,11 +30,11 @@ class MqttRepository @Inject constructor() {
         client.connect(options)
         if (client.isConnected) {
             "Connected to MQTT server".logCat()
-            it.resumeWith(Result.success(client))
+            it.resume(client)
         }
         else {
             "Failed to connect to MQTT server".logCat()
-            it.resumeWith(Result.failure(Exception("Failed to connect to MQTT server")))
+            it.resumeWithException(Exception("Failed to connect to MQTT server"))
         }
     }
 

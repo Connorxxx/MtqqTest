@@ -36,7 +36,7 @@ fun Received(vm: MainViewModel) {
         TextField(
             value = connect,
             onValueChange = { connect = it },
-            label = { Text("Connect") },
+            label = { Text(vm.connectState) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp, end = 8.dp)

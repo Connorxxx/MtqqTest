@@ -1,5 +1,6 @@
 package com.zckj.mqtttest.viewmodels
 
+import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,30 +32,35 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
 //    private val serverUri = "tcp://192.168.0.112:1883"
-    private val clientId = "android_001"
+    private val clientId = "Android_${Build.MODEL}_${Build.DEVICE}"
 
     var receiveState by mutableStateOf("")
+        private set
+
+    var connectState by mutableStateOf("Connect")
         private set
 
     var client: MqttClient? = null
         private set
 
     fun connect(serverUri: String) {
-        viewModelScope.launch() {
+        viewModelScope.launch {
             runCatching {
                 withContext(Dispatchers.IO) {
                     mqttRepo.connectMqtt(serverUri, clientId)
                 }
             }.onSuccess {
                 client = it
+                connectState = "Connected"
             }.onFailure {
+                connectState = "Error"
                 "Error: ${it.localizedMessage}".showToast()
             }
-
+            "server: ${client?.serverURI} client: ${client?.clientId}".logCat()
             mqttRepo.getState(client).collect {
                 when (it) {
                     is Mqtt.Received -> receiveState = "Topic: ${it.topic}\n\n ${it.message}"
-                    is Mqtt.Lost -> "Mqtt Lost: ${it.cause.reasonString}".logCat()
+                    is Mqtt.Lost -> "Mqtt Lost: ${it.cause.reasonString} ${it.cause.returnCode}".logCat()
                     is Mqtt.Error -> "Mqtt Error: ${it.e.localizedMessage}".logCat()
                 }
             }
