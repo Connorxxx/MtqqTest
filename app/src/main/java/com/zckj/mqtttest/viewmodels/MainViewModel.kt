@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zckj.mqtttest.event.Mqtt
 import com.zckj.mqtttest.models.repo.MqttRepository
+import com.zckj.mqtttest.usecase.ConnectUseCase
 import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.utils.showToast
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val mqttRepo: MqttRepository
+    private val connectUseCase: ConnectUseCase,
 ) : ViewModel() {
 
     private val clientId = "Android_${Build.MODEL}_${Build.DEVICE}_${(0..250).random()}"
@@ -43,18 +44,20 @@ class MainViewModel @Inject constructor(
 
     fun connect(serverUri: String, user: String = "", pass: ByteArray = "".toByteArray()) {
         viewModelScope.launch {
-            mqttRepo.connectMqtt(serverUri, user, pass, clientId)
-                .onSuccess {
-                    client = it
-                    connectState = if (it.isConnected) "Connected" else "Connected failed"
-                    "Mqtt connect: ${it.isConnected} ${it.clientId}".logCat()
-                }.onFailure {
+            connectUseCase(serverUri, user, pass).onSuccess {
+                client = it
+                connectState = if (it.isConnected) "Connected" else "Connected failed"
+                "Mqtt connect: ${it.isConnected} ${it.clientId}".logCat()
+            }.onFailure {
                     connectState = "Error"
                     "Error: ${it.localizedMessage}".showToast()
                 }
-            mqttRepo.getState(client).collect {
+            connectUseCase(client) {
                 when (it) {
-                    is Mqtt.Received -> receiveState = "Topic: ${it.topic}\n\n ${it.message}"
+                    is Mqtt.Received -> {
+                        receiveState = "Topic: ${it.topic}\n\n ${it.message}"
+                        receiveState.logCat()
+                    }
                     is Mqtt.Lost -> {
                         "Mqtt Lost: ${it.cause}".logCat()
                         if (it.cause.returnCode != 142) connectState = "Lost"
@@ -84,5 +87,10 @@ class MainViewModel @Inject constructor(
                 "Error: ${it.localizedMessage}".showToast()
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        "Main ViewModel -> onCleared".logCat()
     }
 }

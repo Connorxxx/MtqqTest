@@ -26,9 +26,10 @@ import com.zckj.mqtttest.utils.navigateSingleTopTo
 import com.zckj.mqtttest.viewmodels.MainViewModel
 
 @Composable
-fun Home(vm: MainViewModel = hiltViewModel()) {
+fun Home() {
     val navController = rememberNavController()
     val item = listOf(Screen.Setting, Screen.Message)
+    val viewModel: MainViewModel = hiltViewModel()
     Scaffold(
         topBar = { HomeTopBar() },
         bottomBar = { BottomBar(navController = navController, item = item) },
@@ -39,10 +40,10 @@ fun Home(vm: MainViewModel = hiltViewModel()) {
             Modifier.padding(it)
         ) {
             composable(Screen.Setting.route) {
-                Setting(vm)
+                Setting(viewModel)
             }
             composable(Screen.Message.route) {
-                Message(vm)
+                Message(viewModel)
             }
         }
     }

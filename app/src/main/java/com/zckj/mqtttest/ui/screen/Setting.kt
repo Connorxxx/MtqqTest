@@ -12,15 +12,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.zckj.mqtttest.utils.Event
 import com.zckj.mqtttest.utils.Route
+import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.utils.post
 import com.zckj.mqtttest.viewmodels.MainViewModel
 
@@ -30,8 +34,8 @@ fun Setting(vm: MainViewModel) {
     var user by rememberSaveable { mutableStateOf("") }
     var passwd by rememberSaveable { mutableStateOf("") }
     var connect by rememberSaveable { mutableStateOf("tcp://") }
+    var show by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
-
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -113,8 +117,10 @@ fun Setting(vm: MainViewModel) {
                 Text(text = "Unsubscribe", maxLines = 1)
             }
         }
-        Button(onClick = { scope.post(Route(Screen.Test.route)) }) {
-            Text(text = "Test")
+        if (show) {
+            Button(onClick = { scope.post(Route(Screen.Test.route)) }) {
+                Text(text = "Test")
+            }
         }
     }
 }

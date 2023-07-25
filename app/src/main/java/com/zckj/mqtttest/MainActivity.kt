@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,13 +26,13 @@ import com.zckj.mqtttest.utils.navigateSingleTopTo
 import com.zckj.mqtttest.utils.subscribe
 import com.zckj.mqtttest.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.UUID
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        "Info: ${Build.BOARD} ${Build.MODEL} ${Build.DEVICE}".logCat()
         setContent {
             MqttTestTheme {
                 // A surface container using the 'background' color from the theme
