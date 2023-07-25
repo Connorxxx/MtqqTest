@@ -51,9 +51,10 @@ class MainActivity : ComponentActivity() {
 fun NavHome() {
     val navController = rememberNavController()
     val navigateToScreen: (String) -> Unit = { navController.navigateSingleTopTo(it) }
+    val viewModel: MainViewModel = hiltViewModel()
     LaunchedEffect(Unit) {
         subscribe<Route> {
-            navigateToScreen(it.route)
+            navController.navigate(it.route)
         }
     }
     NavHost(navController = navController, startDestination = Screen.Home.route) {
@@ -61,7 +62,7 @@ fun NavHome() {
             Home()
         }
         composable(Screen.Test.route) {
-            Test()
+            Test(viewModel)
         }
     }
 }

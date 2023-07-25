@@ -68,7 +68,7 @@ fun BottomBar(navController: NavHostController, item: List<Screen>) {
                 label = { Text(stringResource(screen.resourceId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navController.navigateSingleTopTo(screen.route)
+                    navController.navigate(screen.route)
                 }
             )
         }

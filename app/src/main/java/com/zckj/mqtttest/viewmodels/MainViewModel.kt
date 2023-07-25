@@ -1,30 +1,19 @@
 package com.zckj.mqtttest.viewmodels
 
-import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zckj.mqtttest.event.Mqtt
-import com.zckj.mqtttest.models.repo.MqttRepository
 import com.zckj.mqtttest.usecase.ConnectUseCase
+import com.zckj.mqtttest.utils.disConnect
 import com.zckj.mqtttest.utils.logCat
+import com.zckj.mqtttest.utils.publishMessage
 import com.zckj.mqtttest.utils.showToast
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.eclipse.paho.mqttv5.client.IMqttToken
-import org.eclipse.paho.mqttv5.client.MqttCallback
 import org.eclipse.paho.mqttv5.client.MqttClient
-import org.eclipse.paho.mqttv5.client.MqttDisconnectResponse
-import org.eclipse.paho.mqttv5.common.MqttException
-import org.eclipse.paho.mqttv5.common.MqttMessage
-import org.eclipse.paho.mqttv5.common.packet.MqttProperties
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +21,8 @@ class MainViewModel @Inject constructor(
     private val connectUseCase: ConnectUseCase,
 ) : ViewModel() {
 
-    private val clientId = "Android_${Build.MODEL}_${Build.DEVICE}_${(0..250).random()}"
+    var connect by mutableStateOf("tcp://")
+    var topic by mutableStateOf("")
 
     var receiveState by mutableStateOf("")
         private set
@@ -40,7 +30,8 @@ class MainViewModel @Inject constructor(
     var connectState by mutableStateOf("Not connect yet")
         private set
 
-    private var client: MqttClient? = null
+    var client: MqttClient? = null
+        private set
 
     fun connect(serverUri: String, user: String = "", pass: ByteArray = "".toByteArray()) {
         viewModelScope.launch {
@@ -69,22 +60,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun disConnect() {
-        runCatching { client?.disconnect() }.onSuccess { connectState = "Disconnect" }
-    }
-
-    fun subscribe(topic: String) {
-        runCatching { client?.subscribe(topic, 1) }
-    }
-
-    fun unsubscribe(topic: String) {
-        runCatching { client?.unsubscribe(topic) }
+        client?.let {
+            it.disConnect().onSuccess { connectState = "Disconnect" }
+        }
     }
 
     fun publishMessage(topic: String, msg: String) {
-        MqttMessage(msg.toByteArray()).apply {
-            qos = 1
-            runCatching { client?.publish(topic, this) }.onFailure {
-                "Error: ${it.localizedMessage}".showToast()
+        client?.let {
+            it.publishMessage(topic, msg).onFailure { error ->
+                "Error: ${error.localizedMessage}".showToast()
             }
         }
     }
