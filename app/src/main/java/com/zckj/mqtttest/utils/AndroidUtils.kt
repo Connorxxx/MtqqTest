@@ -2,6 +2,7 @@ package com.zckj.mqtttest.utils
 
 import android.util.Log
 import android.widget.Toast
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.zckj.mqtttest.App
 import com.zckj.mqtttest.ui.screen.Screen
@@ -20,7 +21,15 @@ fun NavHostController.navigateSaveState(route: String) =
     this.navigate(route) {
         popUpTo(Screen.Home.route) {
             saveState = true
-            inclusive = false
         }
+        restoreState = true
+    }
+
+fun NavHostController.navigateSingleTopTo(route: String) =
+    this.navigate(route) {
+        popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
         restoreState = true
     }

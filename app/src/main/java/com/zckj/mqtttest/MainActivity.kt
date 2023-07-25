@@ -20,6 +20,7 @@ import com.zckj.mqtttest.ui.screen.Another
 import com.zckj.mqtttest.ui.theme.MqttTestTheme
 import com.zckj.mqtttest.utils.Route
 import com.zckj.mqtttest.utils.navigateSaveState
+import com.zckj.mqtttest.utils.navigateSingleTopTo
 import com.zckj.mqtttest.utils.subscribe
 import com.zckj.mqtttest.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavHome() {
     val navController = rememberNavController()
-    val navigateToScreen: (String) -> Unit = { navController.navigateSaveState(it) }
+    val navigateToScreen: (String) -> Unit = { navController.navigateSingleTopTo(it) }
     LaunchedEffect(Unit) {
         subscribe<Route> {
             navigateToScreen(it.route)
@@ -57,9 +58,6 @@ fun NavHome() {
             Home()
         }
         composable(Screen.Another1.route) {
-            Another()
-        }
-        composable(Screen.Another2.route) {
             Another()
         }
     }

@@ -22,12 +22,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.zckj.mqtttest.utils.navigateSingleTopTo
 import com.zckj.mqtttest.viewmodels.MainViewModel
 
 @Composable
 fun Home(viewModel: MainViewModel = hiltViewModel()) {
     val navController = rememberNavController()
-    val item = listOf(Screen.Setting, Screen.Message)
+    val item = listOf(Screen.Setting, Screen.Message, Screen.Another2)
     Scaffold(
         topBar = { HomeTopBar() },
         bottomBar = { BottomBar(navController = navController, item = item) },
@@ -42,6 +43,9 @@ fun Home(viewModel: MainViewModel = hiltViewModel()) {
             }
             composable(Screen.Message.route) {
                 Message(viewModel)
+            }
+            composable(Screen.Another2.route) {
+                Another()
             }
         }
     }
@@ -66,7 +70,7 @@ fun BottomBar(navController: NavHostController, item: List<Screen>) {
                 label = { Text(stringResource(screen.resourceId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navController.navigate(screen.route)
+                    navController.navigateSingleTopTo(screen.route)
                 }
             )
         }

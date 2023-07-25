@@ -33,7 +33,6 @@ fun Setting(vm: MainViewModel) {
     var user by rememberSaveable { mutableStateOf("") }
     var passwd by rememberSaveable { mutableStateOf("") }
     var connect by rememberSaveable { mutableStateOf("tcp://") }
-    var show by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier.fillMaxSize()
@@ -124,20 +123,13 @@ fun Setting(vm: MainViewModel) {
                 .fillMaxWidth()
                 .height(12.dp)
         )
-        if (show) {
-            Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(
-                    onClick = { scope.post(Route(Screen.Another1.route)) },
-                ) {
-                    Text(text = "Connect another 1")
-                }
-                Button(
-                    onClick = { scope.post(Route(Screen.Another2.route)) },
-                ) {
-                    Text(text = "Connect another 2")
-                }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(
+                onClick = { scope.post(Route(Screen.Another1.route)) },
+            ) {
+                Text(text = "Connect another 1")
             }
-
         }
+
     }
 }
