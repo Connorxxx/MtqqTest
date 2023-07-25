@@ -12,7 +12,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,10 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.zckj.mqtttest.utils.Event
 import com.zckj.mqtttest.utils.Route
-import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.utils.post
 import com.zckj.mqtttest.utils.subscribeTopic
 import com.zckj.mqtttest.utils.unsubscribeTopic
@@ -33,18 +29,18 @@ import com.zckj.mqtttest.viewmodels.MainViewModel
 
 @Composable
 fun Setting(vm: MainViewModel) {
-    // var topic by rememberSaveable { mutableStateOf("") }
+    var topic by rememberSaveable { mutableStateOf("") }
     var user by rememberSaveable { mutableStateOf("") }
     var passwd by rememberSaveable { mutableStateOf("") }
-    // var connect by rememberSaveable { mutableStateOf("tcp://") }
+    var connect by rememberSaveable { mutableStateOf("tcp://") }
     var show by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TextField(
-            value = vm.connect,
-            onValueChange = { vm.connect = it },
+            value = connect,
+            onValueChange = { connect = it },
             label = { Text(vm.connectState) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,7 +77,7 @@ fun Setting(vm: MainViewModel) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { vm.connect(vm.connect, user, passwd.toByteArray()) }
+                onClick = { vm.connect(connect, user, passwd.toByteArray()) }
             ) {
                 Text(text = "Connect", maxLines = 1)
             }
@@ -99,8 +95,8 @@ fun Setting(vm: MainViewModel) {
                 .height(24.dp)
         )
         TextField(
-            value = vm.topic,
-            onValueChange = { vm.topic = it },
+            value = topic,
+            onValueChange = { topic = it },
             label = { Text("Topic") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -113,12 +109,12 @@ fun Setting(vm: MainViewModel) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { vm.client?.subscribeTopic(vm.topic) }
+                onClick = { vm.client?.subscribeTopic(topic) }
             ) {
                 Text(text = "Subscribe", maxLines = 1)
             }
             Button(
-                onClick = { vm.client?.unsubscribeTopic(vm.topic) }
+                onClick = { vm.client?.unsubscribeTopic(topic) }
             ) {
                 Text(text = "Unsubscribe", maxLines = 1)
             }
@@ -129,14 +125,19 @@ fun Setting(vm: MainViewModel) {
                 .height(12.dp)
         )
         if (show) {
-            Button(
-                onClick = { scope.post(Route(Screen.Test.route)) },
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 12.dp)
-            ) {
-                Text(text = "Connect another")
+            Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceEvenly) {
+                Button(
+                    onClick = { scope.post(Route(Screen.Another1.route)) },
+                ) {
+                    Text(text = "Connect another 1")
+                }
+                Button(
+                    onClick = { scope.post(Route(Screen.Another2.route)) },
+                ) {
+                    Text(text = "Connect another 2")
+                }
             }
+
         }
     }
 }

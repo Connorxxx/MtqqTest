@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,15 +26,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.utils.subscribeTopic
 import com.zckj.mqtttest.utils.unsubscribeTopic
 import com.zckj.mqtttest.viewmodels.MainViewModel
 
 @Composable
-fun Test(vm: MainViewModel = hiltViewModel()) {
+fun Another(vm: MainViewModel = hiltViewModel()) {
+    var topic by rememberSaveable { mutableStateOf("") }
+    var connect by rememberSaveable { mutableStateOf("tcp://") }
     Scaffold(
-        bottomBar = { BottomBar(vm, vm.topic) }
+        bottomBar = { BottomBar(vm, topic) }
     ) { padding ->
         Column(Modifier.padding(padding)) {
             Spacer(
@@ -45,8 +45,8 @@ fun Test(vm: MainViewModel = hiltViewModel()) {
             )
             Column(Modifier.padding(start = 8.dp, end = 8.dp)) {
                 TextField(
-                    value = vm.connect,
-                    onValueChange = { vm.connect = it },
+                    value = connect,
+                    onValueChange = { connect = it },
                     label = { Text(vm.connectState) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -58,7 +58,7 @@ fun Test(vm: MainViewModel = hiltViewModel()) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
-                        onClick = { vm.connect(vm.connect) }
+                        onClick = { vm.connect(connect) }
                     ) {
                         Text(text = "Connect", maxLines = 1)
                     }
@@ -71,8 +71,8 @@ fun Test(vm: MainViewModel = hiltViewModel()) {
                     }
                 }
                 TextField(
-                    value = vm.topic,
-                    onValueChange = { vm.topic = it },
+                    value = topic,
+                    onValueChange = { topic = it },
                     label = { Text("Topic") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -85,12 +85,12 @@ fun Test(vm: MainViewModel = hiltViewModel()) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
-                        onClick = { vm.client?.subscribeTopic(vm.topic) }
+                        onClick = { vm.client?.subscribeTopic(topic) }
                     ) {
                         Text(text = "Subscribe", maxLines = 1)
                     }
                     Button(
-                        onClick = { vm.client?.unsubscribeTopic(vm.topic) }
+                        onClick = { vm.client?.unsubscribeTopic(topic) }
                     ) {
                         Text(text = "Unsubscribe", maxLines = 1)
                     }

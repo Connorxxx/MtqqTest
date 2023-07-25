@@ -7,6 +7,7 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     data object Home : Screen("home", R.string.home)
     data object Setting : Screen("setting",R.string.setting)
     data object Message : Screen("message", R.string.message)
+    data object Another1 : Screen("another1", R.string.another_1)
 
-    data object Test : Screen("test", R.string.test)
+    data object Another2 : Screen("another2", R.string.another_2)
 }

@@ -2,10 +2,9 @@ package com.zckj.mqtttest.utils
 
 import android.util.Log
 import android.widget.Toast
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.zckj.mqtttest.App
-import java.lang.reflect.Method
+import com.zckj.mqtttest.ui.screen.Screen
 
 
 fun Any.logCat(tab: String = "MQTT_TEST_LOG") {
@@ -17,11 +16,11 @@ fun String.showToast() {
     Toast.makeText(App.app, this, Toast.LENGTH_SHORT).show()
 }
 
-fun NavHostController.navigateSingleTopTo(route: String) =
+fun NavHostController.navigateSaveState(route: String) =
     this.navigate(route) {
-        popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) {
+        popUpTo(Screen.Home.route) {
             saveState = true
+            inclusive = false
         }
-        launchSingleTop = true
         restoreState = true
     }

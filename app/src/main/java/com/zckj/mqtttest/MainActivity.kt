@@ -1,6 +1,5 @@
 package com.zckj.mqtttest
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,22 +10,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.zckj.mqtttest.ui.screen.Home
 import com.zckj.mqtttest.ui.screen.Screen
-import com.zckj.mqtttest.ui.screen.Test
+import com.zckj.mqtttest.ui.screen.Another
 import com.zckj.mqtttest.ui.theme.MqttTestTheme
-import com.zckj.mqtttest.utils.Event
 import com.zckj.mqtttest.utils.Route
-import com.zckj.mqtttest.utils.logCat
-import com.zckj.mqtttest.utils.navigateSingleTopTo
+import com.zckj.mqtttest.utils.navigateSaveState
 import com.zckj.mqtttest.utils.subscribe
 import com.zckj.mqtttest.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.UUID
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -50,19 +45,21 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavHome() {
     val navController = rememberNavController()
-    val navigateToScreen: (String) -> Unit = { navController.navigateSingleTopTo(it) }
-    val viewModel: MainViewModel = hiltViewModel()
+    val navigateToScreen: (String) -> Unit = { navController.navigateSaveState(it) }
     LaunchedEffect(Unit) {
         subscribe<Route> {
-            navController.navigate(it.route)
+            navigateToScreen(it.route)
         }
     }
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
             Home()
         }
-        composable(Screen.Test.route) {
-            Test(viewModel)
+        composable(Screen.Another1.route) {
+            Another()
+        }
+        composable(Screen.Another2.route) {
+            Another()
         }
     }
 }

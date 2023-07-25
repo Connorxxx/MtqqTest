@@ -21,9 +21,6 @@ class MainViewModel @Inject constructor(
     private val connectUseCase: ConnectUseCase,
 ) : ViewModel() {
 
-    var connect by mutableStateOf("tcp://")
-    var topic by mutableStateOf("")
-
     var receiveState by mutableStateOf("")
         private set
 
@@ -75,6 +72,7 @@ class MainViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        disConnect()
         "Main ViewModel -> onCleared".logCat()
     }
 }
