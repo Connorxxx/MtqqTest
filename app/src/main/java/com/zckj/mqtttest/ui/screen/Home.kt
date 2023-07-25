@@ -25,10 +25,9 @@ import androidx.navigation.compose.rememberNavController
 import com.zckj.mqtttest.viewmodels.MainViewModel
 
 @Composable
-fun Home() {
+fun Home(viewModel: MainViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val item = listOf(Screen.Setting, Screen.Message)
-    val viewModel: MainViewModel = hiltViewModel()
     Scaffold(
         topBar = { HomeTopBar() },
         bottomBar = { BottomBar(navController = navController, item = item) },
