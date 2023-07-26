@@ -21,6 +21,13 @@ class MainViewModel @Inject constructor(
     private val connectUseCase: ConnectUseCase,
 ) : ViewModel() {
 
+    init {
+        "ViewModel Init".logCat()
+    }
+
+    var connect by mutableStateOf("tcp://")
+    var topic by mutableStateOf("")
+
     var receiveState by mutableStateOf("")
         private set
 

@@ -29,17 +29,17 @@ import com.zckj.mqtttest.viewmodels.MainViewModel
 
 @Composable
 fun Setting(vm: MainViewModel) {
-    var topic by rememberSaveable { mutableStateOf("") }
+   // var topic by rememberSaveable { mutableStateOf("") }
     var user by rememberSaveable { mutableStateOf("") }
     var passwd by rememberSaveable { mutableStateOf("") }
-    var connect by rememberSaveable { mutableStateOf("tcp://") }
+   // var connect by rememberSaveable { mutableStateOf("tcp://") }
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TextField(
-            value = connect,
-            onValueChange = { connect = it },
+            value = vm.connect,
+            onValueChange = { vm.connect = it },
             label = { Text(vm.connectState) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,7 +76,7 @@ fun Setting(vm: MainViewModel) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { vm.connect(connect, user, passwd.toByteArray()) }
+                onClick = { vm.connect(vm.connect, user, passwd.toByteArray()) }
             ) {
                 Text(text = "Connect", maxLines = 1)
             }
@@ -94,8 +94,8 @@ fun Setting(vm: MainViewModel) {
                 .height(24.dp)
         )
         TextField(
-            value = topic,
-            onValueChange = { topic = it },
+            value = vm.topic,
+            onValueChange = { vm.topic = it },
             label = { Text("Topic") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,12 +108,12 @@ fun Setting(vm: MainViewModel) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { vm.client?.subscribeTopic(topic) }
+                onClick = { vm.client?.subscribeTopic(vm.topic) }
             ) {
                 Text(text = "Subscribe", maxLines = 1)
             }
             Button(
-                onClick = { vm.client?.unsubscribeTopic(topic) }
+                onClick = { vm.client?.unsubscribeTopic(vm.topic) }
             ) {
                 Text(text = "Unsubscribe", maxLines = 1)
             }
@@ -125,9 +125,9 @@ fun Setting(vm: MainViewModel) {
         )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(
-                onClick = { scope.post(Route(Screen.Another1.route)) },
+                onClick = { scope.post(Route(Screen.Tabs.route)) },
             ) {
-                Text(text = "Connect another 1")
+                Text(text = "Tabs")
             }
         }
 

@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.zckj.mqtttest.ui.screen.Home
 import com.zckj.mqtttest.ui.screen.Screen
 import com.zckj.mqtttest.ui.screen.Another
+import com.zckj.mqtttest.ui.screen.TabTest
 import com.zckj.mqtttest.ui.theme.MqttTestTheme
 import com.zckj.mqtttest.utils.Route
 import com.zckj.mqtttest.utils.navigateSaveState
@@ -59,6 +60,9 @@ fun NavHome() {
         }
         composable(Screen.Another1.route) {
             Another()
+        }
+        composable(Screen.Tabs.route) {
+            TabTest()
         }
     }
 }
