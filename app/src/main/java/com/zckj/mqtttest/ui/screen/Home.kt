@@ -61,6 +61,7 @@ private fun HomeTopBar() {
 
 @Composable
 fun BottomBar(navController: NavHostController, item: List<Screen>) {
+    val navigateToScreen: (String) -> Unit = { navController.navigateSingleTopTo(it) }
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -70,7 +71,7 @@ fun BottomBar(navController: NavHostController, item: List<Screen>) {
                 label = { Text(stringResource(screen.resourceId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navController.navigateSingleTopTo(screen.route)
+                    navigateToScreen(screen.route)
                 }
             )
         }

@@ -20,3 +20,5 @@ fun CoroutineScope.post(event: Event) = launch { eventBus.emit(event) }
 sealed interface Event
 
 data class Route(val route: String) : Event
+
+data class State(val state: Int): Event

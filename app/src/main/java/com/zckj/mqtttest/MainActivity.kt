@@ -7,20 +7,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.zckj.mqtttest.ui.screen.Another
 import com.zckj.mqtttest.ui.screen.Home
 import com.zckj.mqtttest.ui.screen.Screen
-import com.zckj.mqtttest.ui.screen.Another
 import com.zckj.mqtttest.ui.screen.TabTest
 import com.zckj.mqtttest.ui.theme.MqttTestTheme
 import com.zckj.mqtttest.utils.Route
-import com.zckj.mqtttest.utils.navigateSaveState
+import com.zckj.mqtttest.utils.State
 import com.zckj.mqtttest.utils.navigateSingleTopTo
 import com.zckj.mqtttest.utils.subscribe
 import com.zckj.mqtttest.viewmodels.MainViewModel
@@ -48,18 +51,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavHome() {
     val navController = rememberNavController()
-    val navigateToScreen: (String) -> Unit = { navController.navigateSingleTopTo(it) }
     LaunchedEffect(Unit) {
         subscribe<Route> {
-            navigateToScreen(it.route)
+            navController.navigate(it.route)
         }
     }
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
             Home()
-        }
-        composable(Screen.Another1.route) {
-            Another()
         }
         composable(Screen.Tabs.route) {
             TabTest()

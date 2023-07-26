@@ -13,6 +13,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.zckj.mqtttest.App
 import com.zckj.mqtttest.ui.screen.Screen
+import kotlin.io.path.Path
+import kotlin.io.path.copyTo
 
 
 fun Any.logCat(tab: String = "MQTT_TEST_LOG") {

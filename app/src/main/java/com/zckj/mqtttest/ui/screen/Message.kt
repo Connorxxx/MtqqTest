@@ -56,15 +56,7 @@ fun Message(vm: MainViewModel) {
         Spacer(modifier = Modifier
             .fillMaxWidth()
             .height(24.dp))
-        Text(
-            text = vm.receiveState,
-            style = TextStyle(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            ),
-            modifier = Modifier.padding(start = 24.dp)
-        )
+        ReceiveList(messages = vm.itemsList)
     }
 
 }

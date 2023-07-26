@@ -1,7 +1,9 @@
 package com.zckj.mqtttest.viewmodels
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,6 +29,8 @@ class MainViewModel @Inject constructor(
 
     var connect by mutableStateOf("tcp://")
     var topic by mutableStateOf("")
+    var msg by mutableStateOf("")
+    val itemsList = mutableStateListOf<String>()
 
     var receiveState by mutableStateOf("")
         private set
@@ -50,6 +54,7 @@ class MainViewModel @Inject constructor(
             connectUseCase(client) {
                 when (it) {
                     is Mqtt.Received -> {
+                        itemsList.add("Topic: ${it.topic}\n\n ${it.message}")
                         receiveState = "Topic: ${it.topic}\n\n ${it.message}"
                         receiveState.logCat()
                     }
