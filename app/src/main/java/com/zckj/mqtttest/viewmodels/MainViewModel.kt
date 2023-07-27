@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor(
     private val workManager: WorkManager,
 ) : ViewModel() {
 
-   // private val workManager = WorkManager.getInstance(application)
+    // private val workManager = WorkManager.getInstance(application)
 
     init {
         "ViewModel Init".logCat()
@@ -53,13 +53,11 @@ class MainViewModel @Inject constructor(
     var client: MqttClient? = null
         private set
 
-    private val testWork =
-        OneTimeWorkRequestBuilder<ConnectWork>()
-            .setInputData(workDataOf("URL_DATA" to connect))
-            .build()
-
-
     fun testWork() {
+        val testWork = OneTimeWorkRequestBuilder<ConnectWork>()
+                .setInputData(workDataOf("URL_DATA" to connect))
+                .build()
+
         workManager.enqueueUniqueWork(testWork.id.toString(), ExistingWorkPolicy.KEEP, testWork)
         workManager.getWorkInfoByIdLiveData(testWork.id).asFlow().onEach {
             it?.let {
@@ -86,10 +84,12 @@ class MainViewModel @Inject constructor(
                         receiveState = "Topic: ${it.topic}\n\n ${it.message}"
                         receiveState.logCat()
                     }
+
                     is Mqtt.Lost -> {
                         "Mqtt Lost: ${it.cause}".logCat()
                         if (it.cause.returnCode != 142) connectState = "Lost"
                     }
+
                     is Mqtt.Error -> "Mqtt Error: ${it.e.localizedMessage}".logCat()
                 }
             }

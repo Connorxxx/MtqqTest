@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.zckj.mqtttest.utils.logCat
 import kotlinx.coroutines.delay
 
 
@@ -18,6 +19,7 @@ class ConnectWork(
             setProgress(workDataOf("Progress" to it))
             delay(20)
         }
+
         val result = Data.Builder()
             .putString("URL_DATA", data)
             .build()
