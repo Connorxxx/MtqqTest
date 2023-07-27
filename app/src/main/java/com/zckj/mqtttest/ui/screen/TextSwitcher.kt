@@ -1,10 +1,9 @@
 package com.zckj.mqtttest.ui.screen
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -16,12 +15,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,9 +58,9 @@ fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
             targetState = seconds,
             transitionSpec = {
                 if (seconds > previousSecond) {
-                    addAnimation()
+                    contentTransform(AnimatedContentScope.SlideDirection.Up)
                 } else {
-                    addAnimation(false)
+                    contentTransform(AnimatedContentScope.SlideDirection.Down)
                 }.using(SizeTransform(false))
             },
             label = ""
@@ -87,6 +84,11 @@ fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
         }
     }
 }
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun AnimatedContentScope<Int>.contentTransform(towards: AnimatedContentScope.SlideDirection) =
+    slideIntoContainer(towards) + fadeIn() with
+            slideOutOfContainer(towards) + fadeOut()
 
 @OptIn(ExperimentalAnimationApi::class)
 fun addAnimation(isUp: Boolean = true) =
