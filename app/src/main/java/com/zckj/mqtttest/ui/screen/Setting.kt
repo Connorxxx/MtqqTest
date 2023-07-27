@@ -129,6 +129,9 @@ fun Setting(vm: MainViewModel) {
             ) {
                 Text(text = "Tabs")
             }
+            Button(onClick = { vm.testWork() }) {
+                Text(text = "test")
+            }
         }
 
     }

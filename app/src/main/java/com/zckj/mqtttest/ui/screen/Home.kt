@@ -28,7 +28,7 @@ import com.zckj.mqtttest.viewmodels.MainViewModel
 @Composable
 fun Home(viewModel: MainViewModel = hiltViewModel()) {
     val navController = rememberNavController()
-    val item = listOf(Screen.Setting, Screen.Message, Screen.Another2)
+    val item = listOf(Screen.Setting, Screen.Message)//, Screen.Another2
     Scaffold(
         topBar = { HomeTopBar() },
         bottomBar = { BottomBar(navController = navController, item = item) },

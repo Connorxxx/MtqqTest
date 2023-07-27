@@ -1,19 +1,28 @@
 package com.zckj.mqtttest.viewmodels
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.zckj.mqtttest.event.Mqtt
 import com.zckj.mqtttest.usecase.ConnectUseCase
 import com.zckj.mqtttest.utils.disConnect
 import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.utils.publishMessage
 import com.zckj.mqtttest.utils.showToast
+import com.zckj.mqtttest.work.ConnectWork
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.eclipse.paho.mqttv5.client.MqttClient
 import javax.inject.Inject
@@ -21,7 +30,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val connectUseCase: ConnectUseCase,
+    private val workManager: WorkManager,
 ) : ViewModel() {
+
+   // private val workManager = WorkManager.getInstance(application)
 
     init {
         "ViewModel Init".logCat()
@@ -41,6 +53,22 @@ class MainViewModel @Inject constructor(
     var client: MqttClient? = null
         private set
 
+    private val testWork =
+        OneTimeWorkRequestBuilder<ConnectWork>()
+            .setInputData(workDataOf("URL_DATA" to connect))
+            .build()
+
+
+    fun testWork() {
+        workManager.enqueueUniqueWork(testWork.id.toString(), ExistingWorkPolicy.KEEP, testWork)
+        workManager.getWorkInfoByIdLiveData(testWork.id).asFlow().onEach {
+            it?.let {
+                it.progress.getInt("Progress", 0).logCat()
+                if (it.state.isFinished) it.outputData.getString("URL_DATA")?.logCat()
+            }
+        }.launchIn(viewModelScope)
+    }
+
     fun connect(serverUri: String, user: String = "", pass: ByteArray = "".toByteArray()) {
         viewModelScope.launch {
             connectUseCase(serverUri, user, pass).onSuccess {
@@ -48,9 +76,9 @@ class MainViewModel @Inject constructor(
                 connectState = if (it.isConnected) "Connected" else "Connected failed"
                 "Mqtt connect: ${it.isConnected} ${it.clientId}".logCat()
             }.onFailure {
-                    connectState = "Error"
-                    "Error: ${it.localizedMessage}".showToast()
-                }
+                connectState = "Error"
+                "Error: ${it.localizedMessage}".showToast()
+            }
             connectUseCase(client) {
                 when (it) {
                     is Mqtt.Received -> {

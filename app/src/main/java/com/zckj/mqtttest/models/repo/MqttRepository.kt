@@ -28,15 +28,17 @@ class MqttRepository @Inject constructor() {
 
     suspend fun connectMqtt(serverUri: String, user: String, pass: ByteArray, clientId: String) =
         withContext(Dispatchers.IO) {
-            val client = MqttClient(serverUri, clientId, MemoryPersistence())
-            val options = MqttConnectionOptions().apply {
-                userName = user
-                password = pass
-                keepAliveInterval = 20
-                connectionTimeout = 15
-                isSendReasonMessages = true
+            runCatching {
+                val client = MqttClient(serverUri, clientId, MemoryPersistence())
+                val options = MqttConnectionOptions().apply {
+                    userName = user
+                    password = pass
+                    keepAliveInterval = 20
+                    connectionTimeout = 15
+                    isSendReasonMessages = true
+                }
+                client.apply { connect(options) }
             }
-            runCatching { client.apply { connect(options) } }
         }
 
     fun getState(client: MqttClient?) = callbackFlow {
