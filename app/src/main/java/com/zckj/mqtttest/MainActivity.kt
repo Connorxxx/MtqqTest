@@ -21,6 +21,7 @@ import com.zckj.mqtttest.ui.screen.Another
 import com.zckj.mqtttest.ui.screen.Home
 import com.zckj.mqtttest.ui.screen.Screen
 import com.zckj.mqtttest.ui.screen.TabTest
+import com.zckj.mqtttest.ui.screen.TextSwitcher
 import com.zckj.mqtttest.ui.theme.MqttTestTheme
 import com.zckj.mqtttest.utils.Route
 import com.zckj.mqtttest.utils.State
@@ -53,7 +54,7 @@ fun NavHome() {
     val navController = rememberNavController()
     LaunchedEffect(Unit) {
         subscribe<Route> {
-            navController.navigate(it.route)
+            navController.navigate(it.screen.route)
         }
     }
     NavHost(navController = navController, startDestination = Screen.Home.route) {
@@ -62,6 +63,9 @@ fun NavHome() {
         }
         composable(Screen.Tabs.route) {
             TabTest()
+        }
+        composable(Screen.TextSwitcher.route) {
+            TextSwitcher()
         }
     }
 }

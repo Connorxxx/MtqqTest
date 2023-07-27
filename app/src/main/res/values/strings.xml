@@ -5,5 +5,6 @@
     <string name="message">Message</string>
     <string name="another_1">Another One</string>
     <string name="another_2">Another Two</string>
-    <string name="tab">Tab</string>
+    <string name="tab_s">Tab</string>
+    <string name="text_switcher">Text Switcher</string>
 </resources>

@@ -125,12 +125,15 @@ fun Setting(vm: MainViewModel) {
         )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(
-                onClick = { scope.post(Route(Screen.Tabs.route)) },
+                onClick = { scope.post(Route(Screen.Tabs)) },
             ) {
                 Text(text = "Tabs")
             }
             Button(onClick = { vm.testWork() }) {
                 Text(text = "test")
+            }
+            Button(onClick = { scope.post(Route(Screen.TextSwitcher)) } ) {
+                Text(text = "TextSwitcher")
             }
         }
 

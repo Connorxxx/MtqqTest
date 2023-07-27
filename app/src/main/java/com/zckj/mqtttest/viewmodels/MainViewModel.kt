@@ -21,7 +21,10 @@ import com.zckj.mqtttest.utils.publishMessage
 import com.zckj.mqtttest.utils.showToast
 import com.zckj.mqtttest.work.ConnectWork
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.eclipse.paho.mqttv5.client.MqttClient
@@ -34,10 +37,6 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     // private val workManager = WorkManager.getInstance(application)
-
-    init {
-        "ViewModel Init".logCat()
-    }
 
     var connect by mutableStateOf("tcp://")
     var topic by mutableStateOf("")
@@ -52,6 +51,12 @@ class MainViewModel @Inject constructor(
 
     var client: MqttClient? = null
         private set
+
+    val seconds = (0..100)
+        .asSequence()
+        .asFlow()
+        .map { if (it in 0..9) "0$it" else it }
+        .onEach { delay(1000) }
 
     fun testWork() {
         val testWork = OneTimeWorkRequestBuilder<ConnectWork>()

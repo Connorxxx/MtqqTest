@@ -1,5 +1,6 @@
 package com.zckj.mqtttest.utils
 
+import com.zckj.mqtttest.ui.screen.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -19,6 +20,6 @@ fun CoroutineScope.post(event: Event) = launch { eventBus.emit(event) }
 
 sealed interface Event
 
-data class Route(val route: String) : Event
+data class Route(val screen: Screen) : Event
 
 data class State(val state: Int): Event

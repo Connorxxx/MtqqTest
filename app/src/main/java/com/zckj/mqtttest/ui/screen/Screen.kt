@@ -9,5 +9,6 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     data object Message : Screen("message", R.string.message)
     data object Another1 : Screen("another1", R.string.another_1)
     data object Another2 : Screen("another2", R.string.another_2)
-    data object Tabs : Screen("tabs", R.string.tab)
+    data object Tabs : Screen("tabs", R.string.tab_s)
+    data object TextSwitcher : Screen("textSwitcher", R.string.text_switcher)
 }
