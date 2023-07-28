@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +36,7 @@ import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +48,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.unit.dp
+import com.zckj.mqtttest.utils.logCat
+import kotlinx.coroutines.delay
 
 @Composable
 fun DismissList(){
@@ -53,18 +58,22 @@ fun DismissList(){
         msgList.add(it.toString())
     }
     LazyColumn {
-        items(msgList) {
-            SwipeDismiss()
+        items(msgList, { it }) {
+            SwipeDismiss(it, msgList)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SwipeDismiss() {
+fun SwipeDismiss(idx: String, msgList: SnapshotStateList<String>) {
     val dismissState = rememberDismissState()
     var cardVisible by remember { mutableStateOf(true) }
     var show by remember { mutableStateOf(Show.Default) }
+    when (dismissState.currentValue) {
+        DismissValue.DismissedToStart, DismissValue.DismissedToEnd -> msgList.remove(idx)
+        else -> {}
+    }
     SwipeToDismiss(
         modifier = Modifier.padding(top = 24.dp),
         state = dismissState,
@@ -132,7 +141,9 @@ fun SwipeDismiss() {
             Card {
                 ListItem(
                     headlineContent = {
-                        Text("Cupcake")
+                        Text("$idx -> Cupcake", Modifier.clickable {
+                            msgList.remove(idx)
+                        })
                     },
                     supportingContent = { Text("Swipe me left or right!") }
                 )
