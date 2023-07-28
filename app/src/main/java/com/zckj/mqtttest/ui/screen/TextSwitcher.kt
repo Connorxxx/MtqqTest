@@ -12,6 +12,7 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,16 +26,21 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,22 +49,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.zckj.mqtttest.utils.Route
+import com.zckj.mqtttest.utils.post
 import com.zckj.mqtttest.viewmodels.MainViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
     //val seconds by vm.seconds.collectAsState(initial = "00")
+    val bottomState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     Scaffold(
         bottomBar = {
             BottomAppBar(
                 actions = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = { scope.post(Route(Screen.SwipeToDismiss)) }) {
                         Icon(Icons.Filled.Check, contentDescription = "Localized description")
                     }
                     IconButton(onClick = { /* doSomething() */ }) {
@@ -70,7 +83,11 @@ fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
                 },
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = { /* do something */ },
+                        onClick = {
+                            scope.launch {
+                                bottomState.expand()
+                            }
+                        },
                         containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
@@ -85,8 +102,89 @@ fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
                 .padding(it)
                 .fillMaxSize()
         ) {
-            BottomSheet()
+            BottomSheet(bottomState)
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheet(bottomState: SheetState) {
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomState)
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 256.dp,
+        sheetContent = {
+            Sheet(scope, scaffoldState)
+        }
+    ) {
+        Column(
+            Modifier
+                .padding(it),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(42.dp)
+            )
+            AnimationNumber()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun Sheet(
+    scope: CoroutineScope,
+    scaffoldState: BottomSheetScaffoldState
+) {
+    var sliderPosition by remember { mutableStateOf(0f) }
+    Box(
+        Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Swipe up to expand sheet")
+    }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        //  .padding(64.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Sheet content")
+        Spacer(Modifier.height(20.dp))
+        FilledTonalButton(
+            onClick = {
+                scope.launch { scaffoldState.bottomSheetState.partialExpand() }
+            }
+        ) {
+            Text("Click to collapse sheet")
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Slider(
+                modifier = Modifier
+                    .semantics { contentDescription = "Localized Description" }
+                    .weight(4f),
+                value = sliderPosition,
+                valueRange = 0f..100f,
+                onValueChange = { sliderPosition = it }
+            )
+            Text(text = sliderPosition.toInt().toString(), modifier = Modifier
+                .weight(1f)
+                .padding(start = 12.dp), maxLines = 1)
+        }
+
     }
 }
 
@@ -95,10 +193,11 @@ fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
 private fun AnimationNumber() {
     var seconds by remember { mutableStateOf(0) }
     var previousSecond by remember { mutableStateOf(0) }
-    Button(onClick = {
-        previousSecond = seconds
-        seconds++
-    }) {
+    Button(
+        onClick = {
+            previousSecond = seconds
+            seconds++
+        }) {
         Text(text = "Up")
     }
     Spacer(
@@ -133,53 +232,6 @@ private fun AnimationNumber() {
         seconds--
     }) {
         Text(text = "Down")
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheet() {
-    val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
-    BottomSheetScaffold(
-        scaffoldState = scaffoldState,
-        sheetPeekHeight = 256.dp,
-        sheetContent = {
-            Box(
-                Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Swipe up to expand sheet")
-            }
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                  //  .padding(64.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Sheet content")
-                Spacer(Modifier.height(20.dp))
-                Button(
-                    onClick = {
-                        scope.launch { scaffoldState.bottomSheetState.partialExpand() }
-                    }
-                ) {
-                    Text("Click to collapse sheet")
-                }
-            }
-        }
-    ) {
-        Column(Modifier.padding(it),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(42.dp))
-            AnimationNumber()
-        }
     }
 }
 

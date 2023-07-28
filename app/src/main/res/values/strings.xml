@@ -7,4 +7,5 @@
     <string name="another_2">Another Two</string>
     <string name="tab_s">Tab</string>
     <string name="text_switcher">Text Switcher</string>
+    <string name="swipe_to_dismiss">SwipeToDismiss</string>
 </resources>

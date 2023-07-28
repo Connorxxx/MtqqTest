@@ -8,26 +8,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.zckj.mqtttest.ui.screen.Another
 import com.zckj.mqtttest.ui.screen.Home
 import com.zckj.mqtttest.ui.screen.Screen
+import com.zckj.mqtttest.ui.screen.SwipeDismiss
 import com.zckj.mqtttest.ui.screen.TabTest
 import com.zckj.mqtttest.ui.screen.TextSwitcher
 import com.zckj.mqtttest.ui.theme.MqttTestTheme
 import com.zckj.mqtttest.utils.Route
-import com.zckj.mqtttest.utils.State
-import com.zckj.mqtttest.utils.navigateSingleTopTo
 import com.zckj.mqtttest.utils.subscribe
-import com.zckj.mqtttest.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -66,6 +58,9 @@ fun NavHome() {
         }
         composable(Screen.TextSwitcher.route) {
             TextSwitcher()
+        }
+        composable(Screen.SwipeToDismiss.route) {
+            SwipeDismiss()
         }
     }
 }
