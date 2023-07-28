@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -50,7 +51,7 @@ fun Setting(vm: MainViewModel) {
                 .fillMaxWidth()
                 .padding(top = 24.dp)
         ) {
-            TextField(
+            OutlinedTextField(
                 value = user,
                 onValueChange = { user = it },
                 label = { Text("User") },
@@ -59,7 +60,7 @@ fun Setting(vm: MainViewModel) {
                     .padding(start = 8.dp, end = 8.dp)
                     .weight(1f)
             )
-            TextField(
+            OutlinedTextField(
                 value = passwd,
                 onValueChange = { passwd = it },
                 label = { Text("Password") },

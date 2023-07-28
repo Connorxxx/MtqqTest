@@ -17,6 +17,7 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -148,7 +149,7 @@ fun ReceiveList(messages: List<String>) {
 @Composable
 private fun BottomBar(vm: MainViewModel, topic: String) {
     Row(Modifier.padding(start = 12.dp, end = 12.dp)) {
-        TextField(
+        OutlinedTextField(
             value = vm.msg,
             onValueChange = { vm.msg = it },
             label = { Text(text = "Message") },

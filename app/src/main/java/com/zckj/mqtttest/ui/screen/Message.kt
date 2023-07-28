@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -37,7 +38,7 @@ fun Message(vm: MainViewModel) {
                 .fillMaxWidth()
                 .padding(start = 8.dp, end = 8.dp)
         )
-        TextField(
+        OutlinedTextField(
             value = text,
             onValueChange = { text = it },
             label = { Text("Message") },

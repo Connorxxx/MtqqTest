@@ -10,18 +10,36 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,57 +48,137 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.zckj.mqtttest.viewmodels.MainViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
     //val seconds by vm.seconds.collectAsState(initial = "00")
-    var seconds by remember { mutableStateOf(0) }
-    var previousSecond by remember { mutableStateOf(0) }
-
-    Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(onClick = {
-            previousSecond = seconds
-            seconds++
-        }) {
-            Text(text = "Up")
-        }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        )
-        AnimatedContent(
-            targetState = seconds,
-            transitionSpec = {
-                if (seconds > previousSecond) {
-                    contentTransform(AnimatedContentScope.SlideDirection.Up)
-                } else {
-                    contentTransform(AnimatedContentScope.SlideDirection.Down)
-                }.using(SizeTransform(false))
-            },
-            label = ""
-        ) {
-            Text(
-                text = if (it in 0..9) "0$it" else "$it",
-                style = TextStyle(fontSize = MaterialTheme.typography.displayLarge.fontSize),
-                textAlign = TextAlign.Center
+    Scaffold(
+        bottomBar = {
+            BottomAppBar(
+                actions = {
+                    IconButton(onClick = { /* doSomething() */ }) {
+                        Icon(Icons.Filled.Check, contentDescription = "Localized description")
+                    }
+                    IconButton(onClick = { /* doSomething() */ }) {
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = "Localized description",
+                        )
+                    }
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { /* do something */ },
+                        containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                    ) {
+                        Icon(Icons.Filled.Add, "Localized description")
+                    }
+                }
             )
         }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
+    ) {
+        Column(
+            Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
+            BottomSheet()
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalAnimationApi::class)
+private fun AnimationNumber() {
+    var seconds by remember { mutableStateOf(0) }
+    var previousSecond by remember { mutableStateOf(0) }
+    Button(onClick = {
+        previousSecond = seconds
+        seconds++
+    }) {
+        Text(text = "Up")
+    }
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+    )
+    AnimatedContent(
+        targetState = seconds,
+        transitionSpec = {
+            if (seconds > previousSecond) {
+                contentTransform(AnimatedContentScope.SlideDirection.Up)
+            } else {
+                contentTransform(AnimatedContentScope.SlideDirection.Down)
+            }.using(SizeTransform(false))
+        },
+        label = ""
+    ) {
+        Text(
+            text = if (it in 0..9) "0$it" else "$it",
+            style = TextStyle(fontSize = MaterialTheme.typography.displayLarge.fontSize),
+            textAlign = TextAlign.Center
         )
-        Button(onClick = {
-            previousSecond = seconds
-            seconds--
-        }) {
-            Text(text = "Down")
+    }
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+    )
+    Button(onClick = {
+        previousSecond = seconds
+        seconds--
+    }) {
+        Text(text = "Down")
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheet() {
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 256.dp,
+        sheetContent = {
+            Box(
+                Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Swipe up to expand sheet")
+            }
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                  //  .padding(64.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Sheet content")
+                Spacer(Modifier.height(20.dp))
+                Button(
+                    onClick = {
+                        scope.launch { scaffoldState.bottomSheetState.partialExpand() }
+                    }
+                ) {
+                    Text("Click to collapse sheet")
+                }
+            }
+        }
+    ) {
+        Column(Modifier.padding(it),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(42.dp))
+            AnimationNumber()
         }
     }
 }
