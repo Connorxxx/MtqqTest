@@ -21,16 +21,24 @@ android {
             useSupportLibrary true
         }
     }
-
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             applicationVariants.all { variant ->
                 variant.outputs.all {
                     outputFileName = "MqttTest_${variant.versionName}.apk"
                 }
             }
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-DEBUG"
+            minifyEnabled false
+            debuggable true
         }
     }
     compileOptions {
@@ -54,7 +62,6 @@ android {
 }
 
 dependencies {
-
     def nav_version = "2.6.0"
     def work_version = "2.8.1"
     def lifecycle_version = "2.6.1"

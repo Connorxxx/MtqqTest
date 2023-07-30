@@ -163,18 +163,19 @@ private fun Sheet(
             Modifier
                 .fillMaxWidth()
                 .padding(24.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             Slider(
                 modifier = Modifier
                     .semantics { contentDescription = "Localized Description" }
-                    .weight(4f),
+                    .weight(1f),
                 value = sliderPosition,
                 valueRange = 0f..100f,
                 onValueChange = { sliderPosition = it }
             )
             Text(text = sliderPosition.toInt().toString(), modifier = Modifier
-                .weight(1f)
+                //.weight(1f)
                 .padding(start = 12.dp), maxLines = 1)
         }
 

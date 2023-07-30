@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,7 +54,7 @@ import com.zckj.mqtttest.utils.logCat
 import kotlinx.coroutines.delay
 
 @Composable
-fun DismissList(){
+fun DismissList() {
     val msgList = remember { mutableStateListOf<String>() }
     (0..50).forEach {
         msgList.add(it.toString())
@@ -146,7 +147,12 @@ fun SwipeDismiss(idx: String, msgList: SnapshotStateList<String>) {
                             msgList.remove(idx)
                         })
                     },
-                    supportingContent = { Text("Swipe me left or right!") }
+                    supportingContent = {
+                        Text(
+                            "Swipe me left or right!",
+                            Modifier.offset(x = 36.dp)
+                        )
+                    }
                 )
             }
         }
