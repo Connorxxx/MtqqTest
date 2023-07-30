@@ -31,6 +31,7 @@ import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
@@ -81,8 +82,8 @@ fun SwipeDismiss(idx: String, msgList: SnapshotStateList<String>) {
             val color by animateColorAsState(
                 when (dismissState.targetValue) {
                     DismissValue.Default -> Color.LightGray
-                    DismissValue.DismissedToEnd -> Color.Green
-                    DismissValue.DismissedToStart -> Color.Red
+                    DismissValue.DismissedToEnd -> MaterialTheme.colorScheme.primary
+                    DismissValue.DismissedToStart -> MaterialTheme.colorScheme.error
                 }, label = ""
             )
             cardVisible = when (dismissState.currentValue) {

@@ -85,7 +85,7 @@ fun TextSwitcher(vm: MainViewModel = hiltViewModel()) {
                     FloatingActionButton(
                         onClick = {
                             scope.launch {
-                                bottomState.expand()
+                                bottomState.partialExpand()
                             }
                         },
                         containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
@@ -114,23 +114,16 @@ fun BottomSheet(bottomState: SheetState) {
     val scaffoldState = rememberBottomSheetScaffoldState(bottomState)
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetPeekHeight = 256.dp,
+        sheetPeekHeight = 384.dp,
         sheetContent = {
             Sheet(scope, scaffoldState)
         }
     ) {
         Column(
-            Modifier
-                .padding(it),
+            Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(42.dp)
-            )
             AnimationNumber()
         }
     }
@@ -154,17 +147,17 @@ private fun Sheet(
         Modifier
             .fillMaxWidth()
             .fillMaxHeight(),
-        //  .padding(64.dp),
+          //.padding(64.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Sheet content")
         Spacer(Modifier.height(20.dp))
         FilledTonalButton(
             onClick = {
-                scope.launch { scaffoldState.bottomSheetState.partialExpand() }
+                scope.launch { scaffoldState.bottomSheetState.hide() }
             }
         ) {
-            Text("Click to collapse sheet")
+            Text("Click to hide sheet")
         }
         Row(
             Modifier
