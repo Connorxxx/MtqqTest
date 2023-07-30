@@ -1,5 +1,6 @@
 package com.zckj.mqtttest.models.repo
 
+import android.os.Build
 import com.zckj.mqtttest.event.Mqtt
 import com.zckj.mqtttest.utils.logCat
 import kotlinx.coroutines.Dispatchers
@@ -7,6 +8,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import org.eclipse.paho.mqttv5.client.IMqttToken
 import org.eclipse.paho.mqttv5.client.MqttCallback
@@ -26,8 +28,14 @@ import kotlin.coroutines.suspendCoroutine
 @Singleton
 class MqttRepository @Inject constructor() {
 
-    suspend fun connectMqtt(serverUri: String, user: String, pass: ByteArray, clientId: String) =
-        withContext(Dispatchers.IO) {
+    private fun clientId() = "Android_${Build.MODEL}_${Build.DEVICE}_${(0..250).random()}"
+
+    suspend fun connectMqtt(
+        serverUri: String,
+        user: String,
+        pass: ByteArray,
+        clientId: String = clientId(),
+    ) = withContext(Dispatchers.IO) {
             runCatching {
                 val client = MqttClient(serverUri, clientId, MemoryPersistence())
                 val options = MqttConnectionOptions().apply {
@@ -68,6 +76,6 @@ class MqttRepository @Inject constructor() {
 
         })
         awaitClose()
-    }
+    }.flowOn(Dispatchers.IO)
 
 }

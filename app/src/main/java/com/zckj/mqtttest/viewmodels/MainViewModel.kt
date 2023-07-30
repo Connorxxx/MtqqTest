@@ -1,6 +1,5 @@
 package com.zckj.mqtttest.viewmodels
 
-import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,13 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.zckj.mqtttest.event.Mqtt
-import com.zckj.mqtttest.usecase.ConnectUseCase
+import com.zckj.mqtttest.models.repo.MqttRepository
 import com.zckj.mqtttest.utils.disConnect
 import com.zckj.mqtttest.utils.logCat
 import com.zckj.mqtttest.utils.publishMessage
@@ -32,7 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val connectUseCase: ConnectUseCase,
+    private val mqttRepo: MqttRepository,
     private val workManager: WorkManager,
 ) : ViewModel() {
 
@@ -74,7 +72,8 @@ class MainViewModel @Inject constructor(
 
     fun connect(serverUri: String, user: String = "", pass: ByteArray = "".toByteArray()) {
         viewModelScope.launch {
-            connectUseCase(serverUri, user, pass).onSuccess {
+            mqttRepo.connectMqtt(serverUri, user, pass)
+                .onSuccess {
                 client = it
                 connectState = if (it.isConnected) "Connected" else "Connected failed"
                 "Mqtt connect: ${it.isConnected} ${it.clientId}".logCat()
@@ -82,7 +81,7 @@ class MainViewModel @Inject constructor(
                 connectState = "Error"
                 "Error: ${it.localizedMessage}".showToast()
             }
-            connectUseCase(client) {
+            mqttRepo.getState(client).collect {
                 when (it) {
                     is Mqtt.Received -> {
                         itemsList.add("Topic: ${it.topic}\n\n ${it.message}")
